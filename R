@@ -1,0 +1,731 @@
+
+install.packages("rtools") 
+install.packages("rtweet")
+install.packages("pkbuild")
+install.packages("devtools")
+
+## load rtweet package
+library(rtweet)
+library(devtools)
+library(pkbuild)
+
+find_rtools() #should be true 
+
+if(!is.element("devtools", installed.packages()[, 1]))
+  install.packages("devtools", repos = 'http://cran.us.r-project.org')
+require(devtools)
+if(!is.element("RCurl", installed.packages()[, 1]))
+  install.packages("RCurl", repos = 'http://cran.us.r-project.org')
+if(!require(Rstem)) install_url("http://cran.r-project.org/src/contrib/Archive/Rstem/Rstem_0.4-1.tar.gz")
+if(!require(sentiment)) install_url("http://cran.r-project.org/src/contrib/Archive/sentiment/sentiment_0.2.tar.gz")
+if(!is.element("rtweet", installed.packages()[,1]))
+  install.packages("rtweet", repos = 'http://cran.us.r-project.org')
+
+library(dplyr)
+library(tidyverse)
+library(tidytext)
+library(lubridate) #package that makes it easier to work with dates and times
+library(stringr)
+library(ggExtra) #Collection of functions and layers to enhance ggplot2
+library(ggplot2) #package to create graphics
+library(wordcloud) #package to visualize the keywords as a word cloud
+library(gridExtra) #functions to work with "grid" graphics
+library(plotly) #makes interactive, publication-quality graphs
+library(widyr) #untidying data into a wide matrix, so some processing and then tidy the data again
+library(ggraph) #an extension of ggplot2 tailored at plotting graph-like data structures
+library(ggmap)
+
+
+require(sentiment)
+ls("package:sentiment")
+
+library(lexiconPT)
+ls("package:lexiconPT")
+
+
+install.packages("xlsx")
+library("xlsx")
+
+
+#> require(sentiment)
+ls("package:sentiment")
+
+
+## store api keys
+api_key <- "xxxxxxxxxxxxxxxxxxxx"
+api_secret_key <- "xxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+## authenticate via web browser
+token <- create_token(
+  app = "AmazonRainforestProject",
+  consumer_key = api_key,
+  consumer_secret = api_secret_key)
+
+
+###############################################################################
+########## Adding hashtags that will be used for the search into a variable
+###############################################################################
+
+#PT
+amazonia <- '#Amazônia + #amazonia + #prayforamazonas + #prayforamazonia + #florestaamazonica + #queimadasnaamazonia + #desmatamentodaamazonia + #fogonaamazonia'
+
+#EN
+amazon <- '#amazonrainforest + #prayforamazon + #amazonfires + #amazondeforestation + #amazonrainforestfires + #amazonrainforestdeforestation + #amazonian + #amazonforest' 
+
+
+###############################################################################
+####### Portuguese ########
+###############################################################################
+
+############# Searching for tweets
+
+?search_tweets
+
+amazoniapt <- search_tweets( q = "#Amazônia OR #amazonia OR #prayforamazonas OR #prayforamazonia OR #florestaamazonica OR #queimadasnaamazonia OR #desmatamentodaamazonia OR #fogonaamazonia", n=10000, include_rts = FALSE, lang="pt", retryonratelimit = TRUE)
+
+amazoniapt1 <- search_tweets( q = "#Amazônia OR #amazonia OR #prayforamazonas OR #prayforamazonia OR #florestaamazonica OR #queimadasnaamazonia OR #desmatamentodaamazonia OR #fogonaamazonia", n=8000, include_rts = FALSE, lang="pt", since='2020-04-24', until='2020-04-25', retryonratelimit = TRUE)
+
+amazoniapt2 <- search_tweets( q = "#Amazônia OR #amazonia OR #prayforamazonas OR #prayforamazonia OR #florestaamazonica OR #queimadasnaamazonia OR #desmatamentodaamazonia OR #fogonaamazonia", n=8000, include_rts = FALSE, lang="pt", since='2020-04-25', until='2020-04-26', retryonratelimit = TRUE)
+
+amazoniapt3 <- search_tweets( q = "#Amazônia OR #amazonia OR #prayforamazonas OR #prayforamazonia OR #florestaamazonica OR #queimadasnaamazonia OR #desmatamentodaamazonia OR #fogonaamazonia", n=8000, include_rts = FALSE, lang="pt", since='2020-04-26', until='2020-04-27', retryonratelimit = TRUE)
+
+amazoniapt4 <- search_tweets( q = "#Amazônia OR #amazonia OR #prayforamazonas OR #prayforamazonia OR #florestaamazonica OR #queimadasnaamazonia OR #desmatamentodaamazonia OR #fogonaamazonia", n=8000, include_rts = FALSE, lang="pt", since='2020-04-27', until='2020-04-28', retryonratelimit = TRUE)
+
+amazoniapt5 <- search_tweets( q = "#Amazônia OR #amazonia OR #prayforamazonas OR #prayforamazonia OR #florestaamazonica OR #queimadasnaamazonia OR #desmatamentodaamazonia OR #fogonaamazonia", n=8000, include_rts = FALSE, lang="pt", since='2020-04-28', until='2020-04-29', retryonratelimit = TRUE)
+
+amazoniapt6 <- search_tweets( q = "#Amazônia OR #amazonia OR #prayforamazonas OR #prayforamazonia OR #florestaamazonica OR #queimadasnaamazonia OR #desmatamentodaamazonia OR #fogonaamazonia", n=8000, include_rts = FALSE, lang="pt", since='2020-04-29', until='2020-04-30', retryonratelimit = TRUE)
+
+amazoniapt7 <- search_tweets( q = "#Amazônia OR #amazonia OR #prayforamazonas OR #prayforamazonia OR #florestaamazonica OR #queimadasnaamazonia OR #desmatamentodaamazonia OR #fogonaamazonia", n=18000, include_rts = FALSE, lang="pt", since='2020-04-30', until='2020-05-01', retryonratelimit = TRUE)
+
+amazoniapt8 <- search_tweets( q = "#Amazônia OR #amazonia OR #prayforamazonas OR #prayforamazonia OR #florestaamazonica OR #queimadasnaamazonia OR #desmatamentodaamazonia OR #fogonaamazonia", n=18000, include_rts = FALSE, lang="pt", since='2020-05-01', until='2020-05-02', retryonratelimit = TRUE)
+
+amazoniapt9 <- search_tweets( q = "#Amazônia OR #amazonia OR #prayforamazonas OR #prayforamazonia OR #florestaamazonica OR #queimadasnaamazonia OR #desmatamentodaamazonia OR #fogonaamazonia", n=18000, include_rts = FALSE, lang="pt", since='2020-05-02', until='2020-05-03', retryonratelimit = TRUE)
+
+amazoniapt10 <- search_tweets( q = "#Amazônia OR #amazonia OR #prayforamazonas OR #prayforamazonia OR #florestaamazonica OR #queimadasnaamazonia OR #desmatamentodaamazonia OR #fogonaamazonia", n=18000, include_rts = FALSE, lang="pt", since='2020-05-03', until='2020-05-04', retryonratelimit = TRUE)
+
+amazoniapt11 <- search_tweets( q = "#Amazônia OR #amazonia OR #prayforamazonas OR #prayforamazonia OR #florestaamazonica OR #queimadasnaamazonia OR #desmatamentodaamazonia OR #fogonaamazonia", n=18000, include_rts = FALSE, lang="pt", since='2020-05-04', until='2020-05-05', retryonratelimit = TRUE)
+
+amazoniapt12 <- search_tweets( q = "#Amazônia OR #amazonia OR #prayforamazonas OR #prayforamazonia OR #florestaamazonica OR #queimadasnaamazonia OR #desmatamentodaamazonia OR #fogonaamazonia", n=10000, include_rts = FALSE, lang="pt", retryonratelimit = TRUE)
+
+############ Checking what has been collected
+
+amazoniapt
+amazoniapt1
+amazoniapt2
+amazoniapt3
+amazoniapt4
+amazoniapt5
+amazoniapt6
+amazoniapt7
+amazoniapt8
+amazoniapt9
+amazoniapt10
+amazoniapt11
+amazoniapt12
+
+
+
+###############################################################################
+####### English ########
+###############################################################################
+
+############## Searching for tweets
+
+?search_tweets
+
+amazontest <- search_tweets(q = "#amazonrainforest OR #prayforamazon OR #amazonfires OR #amazondeforestation OR #amazonrainforestfires OR #amazonrainforestdeforestation OR #amazonian OR #amazonforest", n=10000, include_rts = FALSE, lang="en", retryonratelimit = TRUE)
+
+amazonen <- search_tweets(q = "#amazonrainforest OR #prayforamazon OR #amazonfires OR #amazondeforestation OR #amazonrainforestfires OR #amazonrainforestdeforestation OR #amazonian OR #amazonforest", n=10000, include_rts = FALSE, lang="en", retryonratelimit = TRUE)
+
+amazonen1 <- search_tweets(q = "#amazonrainforest OR #prayforamazon OR #amazonfires OR #amazondeforestation OR #amazonrainforestfires OR #amazonrainforestdeforestation OR #amazonian OR #amazonforest", n=8000, include_rts = FALSE, lang="en", since='2020-04-24', until='2020-04-25', retryonratelimit = TRUE)
+
+amazonen2 <- search_tweets(q = "#amazonrainforest OR #prayforamazon OR #amazonfires OR #amazondeforestation OR #amazonrainforestfires OR #amazonrainforestdeforestation OR #amazonian OR #amazonforest", n=8000, include_rts = FALSE, lang="en", since='2020-04-25', until='2020-04-26', retryonratelimit = TRUE)
+
+amazonen3 <- search_tweets(q = "#amazonrainforest OR #prayforamazon OR #amazonfires OR #amazondeforestation OR #amazonrainforestfires OR #amazonrainforestdeforestation OR #amazonian OR #amazonforest", n=8000, include_rts = FALSE, lang="en", since='2020-04-26', until='2020-04-27', retryonratelimit = TRUE)
+
+amazonen4 <- search_tweets(q = "#amazonrainforest OR #prayforamazon OR #amazonfires OR #amazondeforestation OR #amazonrainforestfires OR #amazonrainforestdeforestation OR #amazonian OR #amazonforest", n=8000, include_rts = FALSE, lang="en", since='2020-04-27', until='2020-04-28', retryonratelimit = TRUE)
+
+amazonen5 <- search_tweets(q = "#amazonrainforest OR #prayforamazon OR #amazonfires OR #amazondeforestation OR #amazonrainforestfires OR #amazonrainforestdeforestation OR #amazonian OR #amazonforest", n=8000, include_rts = FALSE, lang="en", since='2020-04-28', until='2020-04-29', retryonratelimit = TRUE)
+
+amazonen6 <- search_tweets(q = "#amazonrainforest OR #prayforamazon OR #amazonfires OR #amazondeforestation OR #amazonrainforestfires OR #amazonrainforestdeforestation OR #amazonian OR #amazonforest", n=8000, include_rts = FALSE, lang="en", since='2020-04-29', until='2020-04-30', retryonratelimit = TRUE)
+
+amazonen7 <- search_tweets(q = "#amazonrainforest OR #prayforamazon OR #amazonfires OR #amazondeforestation OR #amazonrainforestfires OR #amazonrainforestdeforestation OR #amazonian OR #amazonforest", n=8000, include_rts = FALSE, lang="en", since='2020-04-30', until='2020-05-01', retryonratelimit = TRUE)
+
+amazonen8 <- search_tweets(q = "#amazonrainforest OR #prayforamazon OR #amazonfires OR #amazondeforestation OR #amazonrainforestfires OR #amazonrainforestdeforestation OR #amazonian OR #amazonforest", n=8000, include_rts = FALSE, lang="en", since='2020-05-01', until='2020-05-02', retryonratelimit = TRUE)
+
+amazonen9 <- search_tweets(q = "#amazonrainforest OR #prayforamazon OR #amazonfires OR #amazondeforestation OR #amazonrainforestfires OR #amazonrainforestdeforestation OR #amazonian OR #amazonforest", n=8000, include_rts = FALSE, lang="en", since='2020-05-02', until='2020-05-03', retryonratelimit = TRUE)
+
+amazonen10 <- search_tweets(q = "#amazonrainforest OR #prayforamazon OR #amazonfires OR #amazondeforestation OR #amazonrainforestfires OR #amazonrainforestdeforestation OR #amazonian OR #amazonforest", n=8000, include_rts = FALSE, lang="en", since='2020-05-03', until='2020-05-04', retryonratelimit = TRUE)
+
+amazonen11 <- search_tweets(q = "#amazonrainforest OR #prayforamazon OR #amazonfires OR #amazondeforestation OR #amazonrainforestfires OR #amazonrainforestdeforestation OR #amazonian OR #amazonforest", n=8000, include_rts = FALSE, lang="en", since='2020-05-04', until='2020-05-05', retryonratelimit = TRUE)
+
+amazonen12 <- search_tweets(q = "#amazonrainforest OR #prayforamazon OR #amazonfires OR #amazondeforestation OR #amazonrainforestfires OR #amazonrainforestdeforestation OR #amazonian OR #amazonforest", n=10000, include_rts = FALSE, lang="en", retryonratelimit = TRUE)
+
+########### Checking what has been collected
+
+amazonen
+amazoniaen1
+amazoniaen2
+amazoniaen3
+amazoniaen4
+amazoniaen5
+amazoniaen6
+amazoniaen7
+amazoniaen8
+amazoniaen9
+amazoniaen10
+amazoniaen11
+amazoniaen12
+
+###############################################################################
+############# Creating a function to clean the tweets
+###############################################################################
+
+f_clean_tweets <- function (tweets) {
+  
+  clean_tweets <- tweets$text
+  # remove retweet 
+  clean_tweets = gsub('(RT|via)((?:\\b\\W*@\\w+)+)', ' ', clean_tweets)
+  # remove people names 
+  clean_tweets = gsub('@\\w+', ' ', clean_tweets)
+  # remove ponctuation
+  clean_tweets = gsub('[[:punct:]]', ' ', clean_tweets)
+  # remove numbers
+  clean_tweets = gsub('[[:digit:]]', ' ', clean_tweets)
+  # remove html links
+  clean_tweets = gsub('http\\w+', ' ', clean_tweets)
+  # remove unecessary space
+  clean_tweets = gsub('[ \t]{2,}', ' ', clean_tweets)
+  clean_tweets = gsub('^\\s+|\\s+$', ' ', clean_tweets)
+  # remove emojis and special characters
+  clean_tweets = gsub('<.*>', ' ', enc2native(clean_tweets))
+  # remove line break
+  clean_tweets = gsub('\\n', ' ', clean_tweets)
+  # remove again any unecessary space
+  clean_tweets = gsub('[ \t]{2,}', ' ', clean_tweets)
+  # turn the text into lower case 
+  clean_tweets = tolower(clean_tweets)
+  
+  # remove duplicates
+  tweets$text <- clean_tweets
+  tweets <- tweets[!duplicated(tweets$text),]
+  tweets
+}
+
+
+###############################################################################
+########## Applying the cleaning function
+###############################################################################
+
+amazoniapt <- f_clean_tweets(amazoniapt)
+amazoniapt1<- f_clean_tweets(amazoniapt1)
+amazoniapt2<- f_clean_tweets(amazoniapt2)
+amazoniapt3<- f_clean_tweets(amazoniapt3)
+amazoniapt4<- f_clean_tweets(amazoniapt4)
+amazoniapt5<- f_clean_tweets(amazoniapt5)
+amazoniapt6<- f_clean_tweets(amazoniapt6)
+amazoniapt7<- f_clean_tweets(amazoniapt7)
+amazoniapt8<- f_clean_tweets(amazoniapt8)
+amazoniapt9<- f_clean_tweets(amazoniapt9)
+amazoniapt10<- f_clean_tweets(amazoniapt10)
+amazoniapt11<- f_clean_tweets(amazoniapt11)
+amazoniapt12<- f_clean_tweets(amazoniapt12)
+
+amazonen<- f_clean_tweets(amazonen)
+amazonen1<- f_clean_tweets(amazonen1)
+amazonen2<- f_clean_tweets(amazonen2)
+amazonen3<- f_clean_tweets(amazonen3)
+amazonen4<- f_clean_tweets(amazonen4)
+amazonen5<- f_clean_tweets(amazonen5)
+amazonen6<- f_clean_tweets(amazonen6)
+amazonen7<- f_clean_tweets(amazonen7)
+amazonen8<- f_clean_tweets(amazonen8)
+amazonen9<- f_clean_tweets(amazonen9)
+amazonen10<- f_clean_tweets(amazonen10)
+amazonen11<- f_clean_tweets(amazonen11)
+amazonen12<- f_clean_tweets(amazonen12)
+
+
+###############################################################################
+############ adding all tweets to one data frame
+###############################################################################
+
+df_tweetspt <- rbind (amazoniapt,
+                      amazoniapt1,
+                      amazoniapt2,
+                      amazoniapt3,
+                      amazoniapt4,
+                      amazoniapt5,
+                      amazoniapt6,
+                      amazoniapt7,
+                      amazoniapt8,
+                      amazoniapt9,
+                      amazoniapt10,
+                      amazoniapt11,
+                      amazoniapt12)
+
+
+
+df_tweetsen <- rbind (amazonen,
+                      amazonen1,
+                      amazonen2,
+                      amazonen3,
+                      amazonen4,
+                      amazonen5,
+                      amazonen6,
+                      amazonen7,
+                      amazonen8,
+                      amazonen9,
+                      amazonen10,
+                      amazonen11,
+                      amazonen12)
+
+
+
+###############################################################################
+################### Obting the text field of tweets
+###############################################################################
+
+#pt
+tweetspt <- df_tweetspt$text
+
+#en
+tweetsen <- df_tweetsen$text
+
+###############################################################################
+################### Obting the date field of tweets
+###############################################################################
+
+#pt
+tweetsptdate <- as.Date(df_tweetspt$created_at)
+
+#en
+tweetsendate <- as.Date(df_tweetsen$created_at)
+
+###############################################################################
+################### Obting the source field of tweets
+###############################################################################
+
+#pt
+sourcept <- df_tweetspt$source
+
+#en
+sourceen <- df_tweetsen$source
+
+###############################################################################
+################### Obting the tweet count field of tweets
+###############################################################################
+
+#pt
+retweetcountpt <- df_tweetspt$retweet_count
+
+#en
+retweetcounten <- df_tweetsen$retweet_count
+
+###############################################################################
+################### Obting the favorite count of tweets
+###############################################################################
+
+#pt
+favoritecountpt <- df_tweetspt$retweet_count
+
+#en
+favoritecounten <- df_tweetsen$retweet_count
+
+
+###############################################################################
+################### Obting the geo-coords count of tweets
+###############################################################################
+
+#pt
+
+geocoordspt <- as.data.frame(cbind(geocood<-df_tweetspt$geo_coords))
+
+#en
+geocoordsen <- as.data.frame(cbind(geocood<-df_tweetsen$geo_coords))
+
+###############################################################################
+################### Obting the location of tweets
+###############################################################################
+
+#pt
+locationpt <- df_tweetspt$location
+
+#en
+locationen <- df_tweetsen$location
+
+
+#pt
+citypt <- df_tweetspt$place_name
+
+#en
+cityen <- df_tweetsen$place_name
+
+
+#pt
+countrypt <- df_tweetspt$country
+
+#en
+countryen <- df_tweetsen$country
+
+###############################################################################
+################### Sentiment Package 
+###############################################################################
+################### Sentiment of the text
+###############################################################################
+
+#pt
+emotionspt <- classify_emotion(tweetspt, algorithm='bayes', prior=1.0)
+emotionspt <- emotionspt[,'BEST_FIT']
+
+
+#en
+emotionsen <- classify_emotion(tweetsen, algorithm='bayes', prior=1.0)
+emotionsen <- emotionsen[,'BEST_FIT']
+
+emotionsen
+
+###############################################################################
+################### Polarities of the text
+###############################################################################
+
+
+#pt
+polaritiespt = classify_polarity(tweetspt, algorithm='bayes')
+polaritiespt <- polaritiespt[,'BEST_FIT']
+
+polaritiespt
+
+#en
+polaritiesen = classify_polarity(tweetsen, algorithm='bayes')
+polaritiesen <- polaritiesen[,'BEST_FIT']
+
+
+###############################################################################
+################### Scores for tweets
+###############################################################################
+
+###############################################################################
+############################# Portuguese
+###############################################################################
+
+# LexiconPT package
+# Load lexiconpt datasets
+data("oplexicon_v3.0")
+data("sentiLex_lem_PT02")
+
+op30 <- oplexicon_v3.0
+sent <- sentiLex_lem_PT02
+
+glimpse(op30)
+glimpse(sent)
+
+write.csv(op30,"/Users/aenni/Documents/BIS/4yp/exporttocsv/op30.csv", row.names = F)
+write.csv(sent,"/Users/aenni/Documents/BIS/4yp/exporttocsv/sent.csv", row.names = F)
+
+
+########### getting the opinion lexicons from working directory
+
+pospt = readLines("/Users/aenni/Documents/BIS/4yp/CodeProgress/opinion-lexicon/positive-wordspt.txt")
+negpt = readLines("/Users/aenni/Documents/BIS/4yp/CodeProgress/opinion-lexicon/negative-wordspt.txt")
+
+pospt
+####### functionPT
+
+sentimentfunpt = function(tweetspt, pospt, negpt, .progress='non')
+{
+  # Parameters
+  # tweetspt: vector of text to score
+  # posPT: vector of words of postive sentiment
+  # negPT: vector of words of negative sentiment
+  # .progress: passed to laply() 4 control of progress bar
+  
+  # create simple array of scores with laply
+  scorespt = laply(tweetspt,
+                 function(singletweet, pospt, negpt)
+                 {
+                   # remove punctuation - using global substitute
+                   singletweet = gsub("[[:punct:]]", "", singletweet)
+                   # remove control characters
+                   singletweet = gsub("[[:cntrl:]]", "", singletweet)
+                   # remove digits
+                   singletweet = gsub("\\d+", "", singletweet)
+                   
+                   # define error handling function when trying tolower
+                   tryTolower = function(x)
+                   {
+                     # create missing value
+                     y = NA
+                     # tryCatch error
+                     try_error = tryCatch(tolower(x), error=function(e) e)
+                     # if not an error
+                     if (!inherits(try_error, "error"))
+                       y = tolower(x)
+                     # result
+                     return(y)
+                   }
+                   # use tryTolower with sapply 
+                   singletweet = sapply(singletweet, tryTolower)
+                   
+                   # split sentence into words with str_split (stringr package)
+                   word.list = str_split(singletweet, "\\s+")
+                   words = unlist(word.list)
+                   
+                   # compare words to the dictionaries of positive & negative terms
+                   pospt.matches = match(words, pospt)
+                   negpt.matches = match(words, negpt)
+                   ?match
+                   # get the position of the matched term or NA
+                   # we just want a TRUE/FALSE
+                   pospt.matches = !is.na(pospt.matches)
+                   negpt.matches = !is.na(negpt.matches)
+                   
+                   # final score
+                   scorept = sum(pospt.matches) - sum(negpt.matches)
+                   return(scorept)
+                 }, pospt, negpt, .progress=.progress )
+  
+  # data frame with scores for each sentence
+  sentiment.df = data.frame(text=tweetspt, scorept=scorespt)
+  return(sentiment.df)
+}
+
+
+############# apply function score.sentiment
+scorespt <- sentimentfunpt(tweetspt, pospt, negpt, .progress='text')
+
+
+
+###############################################################################
+############################## english
+###############################################################################
+
+# getting the opinion lexicons from working directory
+pos = readLines("/Users/aenni/Documents/BIS/4yp/CodeProgress/opinion-lexicon/positive-words.txt")
+neg = readLines("/Users/aenni/Documents/BIS/4yp/CodeProgress/opinion-lexicon/negative-words.txt")
+
+
+######### function
+
+sentimentfunen = function(tweetsen, pos, neg, .progress='non')
+{
+  # Parameters
+  # tweetsen: vector of text to score
+  # pos: vector of words of postive sentiment
+  # neg: vector of words of negative sentiment
+  # .progress: passed to laply() 4 control of progress bar
+  
+  # create simple array of scores with laply
+  scores = laply(tweetsen,
+                 function(singletweet, pos, neg)
+                 {
+                   # remove punctuation - using global substitute
+                   singletweet = gsub("[[:punct:]]", "", singletweet)
+                   # remove control characters
+                   singletweet = gsub("[[:cntrl:]]", "", singletweet)
+                   # remove digits
+                  singletweet = gsub("\\d+", "", singletweet)
+                   
+                   # define error handling function when trying tolower
+                   tryTolower = function(x)
+                   {
+                     # create missing value
+                     y = NA
+                     # tryCatch error
+                     try_error = tryCatch(tolower(x), error=function(e) e)
+                     # if not an error
+                     if (!inherits(try_error, "error"))
+                       y = tolower(x)
+                     # result
+                     return(y)
+                   }
+                   # use tryTolower with sapply 
+                   singletweet = sapply(singletweet, tryTolower)
+                   
+                   # split sentence into words with str_split (stringr package)
+                   word.list = str_split(singletweet, "\\s+")
+                   words = unlist(word.list)
+                   
+                   # compare words to the dictionaries of positive & negative terms
+                   pos.matches = match(words, pos)
+                   neg.matches = match(words, neg)
+                   ?match
+                   # get the position of the matched term or NA
+                   # we just want a TRUE/FALSE
+                   pos.matches = !is.na(pos.matches)
+                   neg.matches = !is.na(neg.matches)
+                   
+                   # final score
+                   score = sum(pos.matches) - sum(neg.matches)
+                   return(score)
+                 }, pos, neg, .progress=.progress )
+  
+  # data frame with scores for each sentence
+  sentiment.df = data.frame(text=tweetsen, score=scores)
+  return(sentiment.df)
+}
+
+
+######### apply function score.sentiment
+scoresen <- sentimentfunen(tweetsen, pos, neg, .progress='text')
+
+
+###############################################################################
+############# Creating a new data frame with all the data separated above
+###############################################################################
+
+## Creating the Data Frame for PT
+
+datapt <-as.data.frame(cbind(ttext=tweetspt,
+                         score = scorespt$score,
+                         emotion=emotionspt,
+                         polarity=polaritiespt,
+                         date=tweetsptdate,
+                         source=sourcept, 
+                         retweetcount=retweetcountpt,
+                         favoritecount=favoritecountpt,
+                         location=locationpt,
+                         city=citypt,
+                         country=countrypt,
+                         #geolocation=geocoordspt,
+                         language = "Portuguese"))
+
+
+
+## Creating the Data Frame for EN
+dataen <-as.data.frame(cbind(ttext=tweetsen,
+                             score = scoresen$score,
+                             emotion=emotionsen,
+                             polarity=polaritiesen,
+                             date=tweetsendate,
+                             source=sourceen, 
+                             retweetcount=retweetcounten,
+                             favoritecount=favoritecounten,
+                             location=locationen,
+                             city=cityen,
+                             country=countryen,
+                             #geolocation=geocoordsen,
+                             language = "English"))
+
+
+###############################################################################
+####### Export tweets to an excel file
+###############################################################################
+
+?write.csv
+
+#write.csv(tweets_amazoniapt,"/Users/aenni/Documents/BIS/4yp/exporttocsv/tweets_amazoniapt.csv", row.names = F, append = TRUE)
+
+write.csv(datapt,"/Users/aenni/Documents/BIS/4yp/exporttocsv/datapt.csv", row.names = F)
+
+write.csv(geocoordspt,"/Users/aenni/Documents/BIS/4yp/exporttocsv/geocoordspt.csv", row.names = T)
+
+write.csv(dataen,"/Users/aenni/Documents/BIS/4yp/exporttocsv/dataen.csv", row.names = F)
+
+
+
+
+
+###############################################################################
+###########
+########### R plots
+###########
+###############################################################################
+
+
+
+###############################################################################
+##### PT
+###############################################################################
+
+# Using the sentiment package to classify emotions
+emotionspt <- classify_emotion(tweetspt, algorithm='bayes', prior=1.0)
+
+# Using the sentiment package to classify polarities 
+polaritiespt = classify_polarity(tweetspt, algorithm='bayes')
+
+amptdf = data.frame(text=tweetspt, emotion=emotionspt[,'BEST_FIT'],
+                polarity=polaritiespt[,'BEST_FIT'], stringsAsFactors=FALSE)
+amptdf[is.na(amptdf)] <- "N.A."
+
+# Plot polarities of tweets
+plot_ly(amptdf, x=~polarity, type="histogram",
+        marker = list(color = c('red', 'gold',
+                                'lightblue'))) %>%
+  layout(yaxis = list(title='Count'), title="Portuguese Sentiment Analysis: Polarity")
+
+# Plot emotions of tweets
+tweet_pie <- ggplot(as.data.frame(emotionspt), aes(x = factor(1), fill = factor(BEST_FIT)))  + geom_bar(width = 1)
+tweet_pie + coord_polar(theta = "y") + 
+  ggtitle("Sentiment Analysis", subtitle = "Amazon Rainforest - Portuguese tweets") + 
+  ylab("Y") + xlab("X") + scale_fill_brewer(palette = "RdYlGn") + 
+  theme(plot.title = element_text(size=12, face='bold'))
+
+# Visualize the tweets by polarity
+amptdfpt <- amptdf %>%
+  group_by(polarity) %>%
+  summarise(pasted=paste(text, collapse=" "))
+
+# Removing stopwords  
+amptdf$pasted = removeWords(amptdf$pasted, stopwords(kind='pt'))
+
+# Building the corpus
+corpus = Corpus(VectorSource(amptdf$pasted))
+tdm = TermDocumentMatrix(corpus)
+tdm = as.matrix(tdm)
+colnames(tdm) = amptdf$polarity
+
+# Comparison word cloud
+comparison.cloud(tdm, colors = brewer.pal(3, 'Dark2'),
+                 scale = c(3,.5), random.order = FALSE, title.size = 1.5)
+
+
+
+
+##### EN
+
+# Utilizing the sentiment package to classify emotions
+emotionsen <- classify_emotion(tweetsen, algorithm='bayes', prior=1.0)
+
+# Utilizando o pacote sentiment para classificar as polaridades 
+polaritiesen = classify_polarity(tweetsen, algorithm='bayes')
+
+amendf = data.frame(text=tweetsen, emotion=emotionsen[,'BEST_FIT'],
+                    polarity=polaritiesen[,'BEST_FIT'], stringsAsFactors=FALSE)
+amendf[is.na(amendf)] <- "N.A."
+
+# Plot polarities of tweets
+plot_ly(amendf, x=~polarity, type="histogram",
+        marker = list(color = c('red', 'gold',
+                                'lightblue'))) %>%
+  layout(yaxis = list(title='Count'), title="English Sentiment Analysis: Polarity")
+
+# Plot emotions of tweets
+tweet_pie <- ggplot(as.data.frame(emotionsen), aes(x = factor(1), fill = factor(BEST_FIT)))  + geom_bar(width = 1)
+tweet_pie + coord_polar(theta = "y") + 
+  ggtitle("Sentiment Analysis", subtitle = "Amazon Rainforest - English tweets") + 
+  ylab("Y") + xlab("X") + scale_fill_brewer(palette = "RdYlGn") + 
+  theme(plot.title = element_text(size=12, face='bold'))
+
+# Visualize the tweets by polarity
+amendf <- amendf %>%
+  group_by(polarity) %>%
+  summarise(pasted=paste(text, collapse=" "))
+
+# Removing stopwords  
+amendf$pasted = removeWords(amendf$pasted, stopwords(kind='en'))
+
+# Building the corpus
+corpus = Corpus(VectorSource(amendf$pasted))
+tdm = TermDocumentMatrix(corpus)
+tdm = as.matrix(tdm)
+colnames(tdm) = amendf$polarity
+
+# Comparison word cloud
+comparison.cloud(tdm, colors = brewer.pal(3, 'Dark2'),
+                 scale = c(3,.5), random.order = FALSE, title.size = 1.5)
+
+
+
+
+
